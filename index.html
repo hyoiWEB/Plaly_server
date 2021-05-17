@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>Sample_OneSignal</title>
+    <style type="text/css">
+      /* normalize */
+      body { margin: 0; }
+
+      /* global styles */
+      video {
+        background-color: #111;
+        width: 100%;
+      }
+
+      p {
+        font-size: 30px;
+      }
+
+      input {
+        font-size: 30px;
+      }
+
+      button {
+        font-size: 30px;
+      }
+
+      .heading {
+        text-align: center;
+        margin-bottom: 0;
+      }
+
+      .note {
+        text-align: center;
+      }
+
+
+      .container {
+        margin-left: auto;
+        margin-right: auto;
+        width: 80%;
+      }
+
+      .action {
+        text-align: center;
+      }
+
+      /* p2p-media styles */
+      .p2p-media {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .p2p-media .remote-stream {
+        width: 50%;
+      }
+
+      .p2p-media .local-stream {
+        width: 30%;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+      <h1 class="heading">P2PVideo Webside</h1>
+      <p class="note">
+        "maid-shokan"に接続されます。
+      </p>
+      <div class="p2p-media">
+        <div class="remote-stream">
+          <video id="js-remote-stream"></video>
+        </div>
+        <div class="local-stream">
+          <video id="js-local-stream"></video>
+          <p>Your ID: <span id="js-local-id"></span></p>
+          <div class="action">
+          <!----------------------------------------------------------------
+          <input type="text" placeholder="Remote Peer ID" id="js-remote-id">
+          <!-<button id="js-call-trigger">Call</button>
+          ----------------------------------------------------------------->
+          <button id="js-close-trigger">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  	
+  	<script src="/socket.io/socket.io.js"></script>
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdn.webrtc.ecl.ntt.com/skyway-latest.js"></script>
+
+    <script>
+      $(function() {
+
+          //Skyway---------------------------------------------------------
+
+          const Peer = window.Peer;
+
+          (async function main() {
+            const localVideo = document.getElementById('js-local-stream');
+            const localId = document.getElementById('js-local-id');
+            //const callTrigger = document.getElementById('js-call-trigger');
+            const closeTrigger = document.getElementById('js-close-trigger');
+            const remoteVideo = document.getElementById('js-remote-stream');
+            //const remoteId = document.getElementById('js-remote-id');
+            const meta = document.getElementById('js-meta');
+            const sdkSrc = document.querySelector('script[src*=skyway]');
+
+            //URLに任意の文字列を追加----------------------------------------
+            // const text = document.getElementById('test');
+            // const button = document.getElementById('button');
+
+            // button.addEventListener('click', function(e) {
+            // var n,s,url;
+            // //URLを取得
+            // url = document.location.href;
+            // //URLに?が含まれている場合は消去
+            // n = url.indexOf("?");
+            // if (n > 0) {
+            //   url = url.substr(0,n); //二重化を防ぐ
+            // }
+            // //テキストを取得
+            // s = text.value;
+            // //エンコード
+            // s = escape(s);
+            // //新しいウィンドウ
+            // window.open(url + "?" + s,"_blank","");
+            // });
+            //------------------------------------------------------------
+            //例、http://localhost:3000/?abcdefg
+
+            //URLの検索文字列を取得------------------------------------------
+            var get_text;
+            //URLの？以降を取得
+            get_text = document.location.search;
+            get_text = get_text.substring(1,get_text.length);
+            //デコード
+            get_text = unescape(get_text);
+            console.log(get_text);
+            //出力
+            //document.getElementById("text").innerHTML = get_text;
+            //-------------------------------------------------------------
+
+            //Socket.io-----------------------------------------------------
+
+            var socket = io();
+            var el;
+
+            socket.on('connect', () => {
+                console.log('connect');
+
+                // socket.emit("sendMessageToServer", get_text);
+                // console.log('送信しました。');
+            });
+
+                //画面更新をさせない
+                //e.preventDefault();
+              
+                //console.log('クリックされました！');
+
+                // socket.emit("sendMessageToServer", get_text);
+                // console.log('送信しました。');
+
+                //textを空にする
+                //remoteId.value = '';
+
+            //Socket.io-----------------------------------------------------
+
+
+            const localStream = await navigator.mediaDevices
+              .getUserMedia({
+                audio: true,
+                video: true,
+              })
+              .catch(console.error);
+
+            // Render local stream
+            localVideo.muted = true;
+            localVideo.srcObject = localStream;
+            localVideo.playsInline = true;
+            await localVideo.play().catch(console.error);
+
+            const peer = (window.peer = new Peer({
+              key: "bc3292a3-35bd-4289-ac50-359c8100377c",
+              debug: 3,
+            }));
+
+            //htmlのjs-local-idに追加
+            peer.once('open', id => (localId.textContent = id));
+
+
+            // 電話をかける
+            setTimeout(function(){
+
+              if (!peer.open) {
+                console.log("peerIDが取得されていません")
+                return;
+              }
+              console.log("callしました")
+
+              let frontPeer = JSON.stringify(get_text)
+
+              socket.emit("sendMessageToServer", frontPeer);
+                console.log('送信しました。');
+
+              const mediaConnection = peer.call(get_text, localStream);
+              //const mediaConnection = peer.call(remoteId.value, localStream);
+              const dataConnection = peer.connect(get_text);
+              //const dataConnection = peer.connect(remoteId.value);
+
+              mediaConnection.on('stream', async stream => {
+                    // Render remote stream for caller
+                    remoteVideo.srcObject = stream;
+                    remoteVideo.playsInline = true;
+                    await remoteVideo.play().catch(console.error);
+              });
+
+              mediaConnection.once('close', () => {
+                    remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+                    remoteVideo.srcObject = null;
+                  });
+
+              closeTrigger.addEventListener('click', () => mediaConnection.close(true));
+            }, 3000);
+
+            // 電話を受け取る
+            peer.on('call', mediaConnection => {
+              mediaConnection.answer(localStream);
+
+              mediaConnection.on('stream', async stream => {
+                // Render remote stream for callee
+                remoteVideo.srcObject = stream;
+                remoteVideo.playsInline = true;
+                await remoteVideo.play().catch(console.error);
+              });
+
+              mediaConnection.once('close', () => {
+                remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+                remoteVideo.srcObject = null;
+              });
+
+              closeTrigger.addEventListener('click', () => mediaConnection.close(true));
+            });
+
+            peer.on('error', console.error);
+
+          })();
+
+      });
+    </script>
+  </body>
+</html>

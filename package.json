@@ -1,0 +1,25 @@
+{
+  "name": "websockets-socket.io",
+  "version": "1.0.0",
+  "engines": {
+    "node": "12.x"
+  },
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@airbnb/node-memwatch": "^2.0.0",
+    "express": "^4.17.1",
+    "onesignal-node": "^3.2.1",
+    "socket.io": "^2.4.1",
+    "socket.io2": "^1.0.1"
+  },
+  "devDependencies": {
+    "@ardatan/node-memwatch": "^1.0.8"
+  }
+}
