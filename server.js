@@ -4,7 +4,7 @@ const express = require('express');
 const socketIO = require('socket.io');
 const OneSignal = require('onesignal-node');
 //メモリリーク調査用
-const memwatch = require('@airbnb/node-memwatch');
+//const memwatch = require('@airbnb/node-memwatch');
 
 const PORT = process.env.PORT || 3000;
 const INDEX = '/index.html';
@@ -23,31 +23,31 @@ io.on('connection', (socket) => {
 
   //const memwatch = require('memwatch-next');
   // メモリ使用状況の最初のスナップショットを取得
-  const hd = new memwatch.HeapDiff();
+  //const hd = new memwatch.HeapDiff();
 
-  global.gc();
+  //global.gc();
 
   // 2.メモリ使用状況を出力
-    const heapUsed = process.memoryUsage().heapUsed;
-    console.log(heapUsed + " バイト使用中")
+    //const heapUsed = process.memoryUsage().heapUsed;
+    //console.log(heapUsed + " バイト使用中")
 
-  process.on('SIGINT', function() {
-    const diff = hd.end();
-    // diff情報をコンソール出力:
-    console.log("memwatch diff:", JSON.stringify(diff, null, 2));
-    // diff情報をファイルにダンプするのも良いかも:
-    // const fs = require("fs");
-    // fs.writeFileSync("./memdiffdump.json", JSON.stringify(diff, null, 2));
-    process.exit();
-  });
+  // process.on('SIGINT', function() {
+  //   const diff = hd.end();
+  //   // diff情報をコンソール出力:
+  //   console.log("memwatch diff:", JSON.stringify(diff, null, 2));
+  //   // diff情報をファイルにダンプするのも良いかも:
+  //   // const fs = require("fs");
+  //   // fs.writeFileSync("./memdiffdump.json", JSON.stringify(diff, null, 2));
+  //   process.exit();
+  // });
 
    //定期的にメモリ使用量を吐き出す
-   const used = process.memoryUsage()
-   const messages = []
-   for (let key in used) {
-     messages.push(`${key}: ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`)
-   }
-   console.log(new Date(), messages.join(', '))
+   // const used = process.memoryUsage()
+   // const messages = []
+   // for (let key in used) {
+   //   messages.push(`${key}: ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`)
+   // }
+   // console.log(new Date(), messages.join(', '))
 
 
 
