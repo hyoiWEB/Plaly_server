@@ -14,7 +14,7 @@ const server = express()
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 const io = socketIO(server);
-const client = new OneSignal.Client('1308fc8f-2338-4f2e-92ec-a52bde4dbf1c','ZTA0Y2IzZjYtY2UzNS00MzJmLTg2NmItODNkNmZkZmFhZWE5');
+const client = new OneSignal.Client('d3649ef9-6aee-4293-bd73-789919953f73','NThiN2VhYTgtOWMzMy00OGU5LWFhM2UtM2RiNDllMjU3OWUz');
 
 //var PeerID = [];
 
