@@ -75,15 +75,15 @@ io.on('connection', (socket) => {
     });
 
 
-  socket.on('Token', function(peer,token){
+  socket.on('Token', function(id,token){
 　　
-    var peer = JSON.parse(peer);
+    var id = JSON.parse(id);
     var token = JSON.parse(token);
 
     try {
       (async () =>{
       const response = await client.addDevice({
-        tags:{"PeerID":`${peer}`},
+        tags:{"ID":`${id}`},
         device_type: '0',
         test_type: '1',
         identifier: `${token}`,
@@ -99,7 +99,7 @@ io.on('connection', (socket) => {
     }
 
     console.log("データを受け取りました");
-    console.log(peer);
+    console.log(id);
     console.log(token);
   });
 
