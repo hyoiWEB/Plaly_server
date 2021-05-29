@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
       channel_for_external_user_ids: "push",
       //include_external_user_ids: [`${data}`],
       filters: [
-          {"field": "tag","key": "PeerID","relation": "=","value": `${author}`}
+          {"field": "tag","key": "ID","relation": "=","value": `${author}`}
         ]
     };
 
