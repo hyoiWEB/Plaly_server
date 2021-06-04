@@ -55,7 +55,6 @@ io.on('connection', (socket) => {
       const response = await client.addDevice({
         tags:{"ID":`${id}`},
         device_type: '0',
-        test_type: '1',
         identifier: `${token}`,
       });
       console.log(response.body);
