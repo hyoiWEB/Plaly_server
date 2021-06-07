@@ -24,11 +24,33 @@ io.on('connection', (socket) => {
   socket.on("sendMessageToServer", function (id,data) {
 
       var author = JSON.parse(id);
-      var pushType = JSON.parse(data);
+      var Message = JSON.parse(data);
 
       let notification = {
       contents: {
-        'en': `${pushType}`,
+        'en': `${Message}`,
+      },
+      included_segments: ['Subscribed Users'],
+      channel_for_external_user_ids: "push",
+      //include_external_user_ids: [`${data}`],
+      filters: [
+          {"field": "tag","key": "ID","relation": "=","value": `${author}`}
+        ]
+    };
+
+      console.log(notification);
+      client.createNotification(notification)
+    console.log("送信しました。")
+
+    });
+
+  socket.on("sendVoipToServer", function (data) {
+
+      var author = JSON.parse(data);
+
+      let notification = {
+      contents: {
+        'en': 'New Call',
       },
       included_segments: ['Subscribed Users'],
       channel_for_external_user_ids: "push",
