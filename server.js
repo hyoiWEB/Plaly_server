@@ -44,20 +44,16 @@ io.on('connection', (socket) => {
 
     });
 
-  socket.on("sendVoipToServer", function (data) {
+  socket.on("sendAllusers", function (data) {
 
-      var author = JSON.parse(data);
+      var Message = JSON.parse(data);
 
       let notification = {
       contents: {
-        'en': 'New Call',
+        'en': '新しい通話が開始されました。/bn' + '[' + `${Message}` + ']',
       },
       included_segments: ['Subscribed Users'],
-      channel_for_external_user_ids: "push",
-      //include_external_user_ids: [`${data}`],
-      filters: [
-          {"field": "tag","key": "ID","relation": "=","value": `${author}`}
-        ]
+      channel_for_external_user_ids: "push"
     };
 
       console.log(notification);
